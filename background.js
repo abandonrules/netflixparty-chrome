@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         new chrome.declarativeContent.PageStateMatcher({
           pageUrl: {
             hostEquals: 'www.netflix.com',
-            pathPrefix: '/watch/',
+            pathPrefix: '/title/',
             schemes: ['http', 'https']
           }
         })
