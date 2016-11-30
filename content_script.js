@@ -203,7 +203,7 @@
     // pause
     var pause = function() {
       uiEventsHappening += 1;
-      jQuery('.player-play-pause.pause').click();
+      jQuery('.button-nfplayerPause').click();
       return delayUntil(function() {
         return getState() === 'paused';
       }, 1000)().then(hideControls).ensure(function() {
@@ -214,7 +214,7 @@
     // play
     var play = function() {
       uiEventsHappening += 1;
-      jQuery('.player-play-pause.play').click();
+      jQuery('.button-nfplayerPlay').click();
       return delayUntil(function() {
         return getState() === 'playing';
       }, 2500)().then(hideControls).ensure(function() {
@@ -226,9 +226,9 @@
     var freeze = function(milliseconds) {
       return function() {
         uiEventsHappening += 1;
-        jQuery('.player-play-pause.pause').click();
+        jQuery('.button-nfplayerPause').click();
         return delay(milliseconds)().then(function() {
-          jQuery('.player-play-pause.play').click();
+            jQuery('.button-nfplayerPlay').click();
         }).then(hideControls).ensure(function() {
           uiEventsHappening -= 1;
         });
