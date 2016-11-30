@@ -161,7 +161,7 @@
     // show the playback controls
     var showControls = function() {
       uiEventsHappening += 1;
-      var scrubber = jQuery('#scrubber-component');
+      var scrubber = jQuery('#scrubber-head');
       var eventOptions = {
         'bubbles': true,
         'button': 0,
@@ -244,7 +244,7 @@
         var eventOptions, scrubber, oldPlaybackPosition, newPlaybackPosition;
         return showControls().then(function() {
           // compute the parameters for the mouse events
-          scrubber = jQuery('#scrubber-component');
+          scrubber = jQuery('#scrubber-head');
           var factor = (milliseconds - seekErrorMean) / getDuration();
           factor = Math.min(Math.max(factor, 0), 1);
           var mouseX = scrubber.offset().left + Math.round(scrubber.width() * factor); // relative to the document
