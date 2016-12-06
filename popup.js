@@ -67,11 +67,17 @@ $(function() {
         });
       };
 
+      // listen for clicks on the "Show chat" checkbox
+      $('#show-chat').change(function () {
+          sendMessage('showChat', { visible: $('#show-chat').is(':checked') }, null);
+      });
+
       // connected/disconnected state
       var showConnected = function(sessionId) {
         var urlWithSessionId = tabs[0].url.split('?')[0] + '?npSessionId=' + encodeURIComponent(sessionId);
         $('.disconnected').addClass('hidden');
         $('.connected').removeClass('hidden');
+        $('#show-chat').prop('checked', false);
         $('#show-chat').prop('checked', true);
         $('#share-url').val(urlWithSessionId).focus().select();
       };
@@ -124,11 +130,6 @@ $(function() {
           sendMessage('leaveSession', {}, function(response) {
             showDisconnected();
           });
-        });
-
-        // listen for clicks on the "Show chat" checkbox
-        $('#show-chat').change(function() {
-          sendMessage('showChat', { visible: $('#show-chat').is(':checked') }, null);
         });
 
         // listen for clicks on the share URL box

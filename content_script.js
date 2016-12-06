@@ -120,7 +120,7 @@
     // video duration in milliseconds
     var lastDuration = 60 * 60 * 1000;
     var getDuration = function() {
-      var video = jQuery('.player-video-wrapper video');
+      var video = jQuery('.video-container video');
       if (video.length > 0) {
         lastDuration = Math.floor(video[0].duration * 1000);
       }
@@ -129,13 +129,13 @@
 
     // 'playing', 'paused', 'loading', or 'idle'
     var getState = function() {
-      if (jQuery('.timeout-wrapper.player-active .icon-play').length > 0) {
-        return 'idle';
-      }
-      if (jQuery('.player-progress-round.player-hidden').length === 0) {
+      if (jQuery('.nf-loading-spinner').length > 0) {
         return 'loading';
       }
-      if (jQuery('.player-control-button.player-play-pause.play').length === 0) {
+      if (jQuery('.player-loading-background-image.player-loading-background-image-loaded').length > 0) {
+          return 'idle';
+      }
+      if (jQuery('.button-nfplayerPlay').length === 0) {
         return 'playing';
       } else {
         return 'paused';
@@ -144,13 +144,13 @@
 
     // current playback position in milliseconds
     var getPlaybackPosition = function() {
-      return Math.floor(jQuery('.player-video-wrapper video')[0].currentTime * 1000);
+      return Math.floor(jQuery('.video-container video')[0].currentTime * 1000);
     };
 
     // wake up from idle mode
     var wakeUp = function() {
       uiEventsHappening += 1;
-      jQuery('.timeout-wrapper.player-active .icon-play').click();
+      jQuery('.nf-big-play-pause.play').click();
       return delayUntil(function() {
         return getState() !== 'idle';
       }, 2500)().ensure(function() {
@@ -161,7 +161,7 @@
     // show the playback controls
     var showControls = function() {
       uiEventsHappening += 1;
-      var scrubber = jQuery('#scrubber-head');
+      var scrubber = jQuery('.scrubber-head');
       var eventOptions = {
         'bubbles': true,
         'button': 0,
@@ -178,7 +178,7 @@
     // hide the playback controls
     var hideControls = function() {
       uiEventsHappening += 1;
-      var player = jQuery('#netflix-player');
+      var player = jQuery('.hero-video-container');
       var mouseX = 100; // relative to the document
       var mouseY = 100; // relative to the document
       var eventOptions = {
@@ -244,7 +244,7 @@
         var eventOptions, scrubber, oldPlaybackPosition, newPlaybackPosition;
         return showControls().then(function() {
           // compute the parameters for the mouse events
-          scrubber = jQuery('#scrubber-head');
+          scrubber = jQuery('.scrubber-head');
           var factor = (milliseconds - seekErrorMean) / getDuration();
           factor = Math.min(Math.max(factor, 0), 1);
           var mouseX = scrubber.offset().left + Math.round(scrubber.width() * factor); // relative to the document
@@ -267,7 +267,7 @@
           scrubber[0].dispatchEvent(new MouseEvent('mouseover', eventOptions));
         }).then(delayUntil(function() {
           // wait for the trickplay preview to show up
-          return jQuery('.trickplay-preview').is(':visible');
+            return jQuery('.trickplay').is(':visible');
         }, 2500)).then(function() {
           // remember the old position
           oldPlaybackPosition = getPlaybackPosition();
@@ -296,7 +296,7 @@
     //////////////////////////////////////////////////////////////////////////
 
     // connection to the server
-    var socket = io('https://netflixparty-server.herokuapp.com');
+    var socket = io('https://barragebox.herokuapp.com/');
 
     // get the userId from the server
     var userId = null;
@@ -330,7 +330,7 @@
     // this is the markup that needs to be injected onto the page for chat
     var chatHtml = `
       <style>
-        #netflix-player.with-chat {
+        .hero-video-container.with-chat {
           width: calc(100% - ${chatSidebarWidth}px) !important;
         }
 
@@ -340,7 +340,7 @@
 
         #chat-container {
           width: ${chatSidebarWidth}px;
-          height: 100%;
+          //height: 100%;
           position: absolute;
           top: 0;
           right: 0;
@@ -474,9 +474,9 @@
     var typingTimer = null;
 
     // set up the chat state, or reset the state if the system has already been set up
-    var initChat = function() {
+    var initChat = function () {
       if (jQuery('#chat-container').length === 0) {
-        jQuery('#netflix-player').after(chatHtml);
+        jQuery('.hero-video-container').after(chatHtml);
         jQuery('#presence-indicator').hide();
         var oldPageX = null;
         var oldPageY = null;
@@ -542,20 +542,33 @@
 
     // query whether the chat sidebar is visible
     var getChatVisible = function() {
-      return jQuery('#netflix-player').hasClass('with-chat');
+      return jQuery('.hero-video-container').hasClass('with-chat');
     };
 
     // show or hide the chat sidebar
     var setChatVisible = function(visible) {
       if (visible) {
-        jQuery('#netflix-player').addClass('with-chat');
+        //if (jQuery('.button-nfplayerWindowed').length === 0) {
+        //    delayUntil(function () {
+        //        return jQuery('.button-nfplayerFullscreen').length > 0;
+        //    }, Infinity)().then(function () {
+        //        jQuery('.button-nfplayerFullscreen').click();
+        //    });
+        //}
+        
+        jQuery('.hero-video-container').addClass('with-chat');
         jQuery('#chat-container').show();
+        delayUntil(function () {
+            return jQuery('#chat-container').length > 0;
+        }, Infinity)().then(function () {
+            jQuery('#chat-container').height(jQuery('.hero-video-container').height());
+        });
         if (!document.hasFocus()) {
           clearUnreadCount();
         }
       } else {
         jQuery('#chat-container').hide();
-        jQuery('#netflix-player').removeClass('with-chat');
+        jQuery('.hero-video-container').removeClass('with-chat');
       }
     };
 
@@ -599,6 +612,18 @@
       }
     });
 
+    //jQuery('.button-nfplayerFullscreen').bind('click', function () {
+    //    if (jQuery('#chat-container').length > 0) {
+    //        if (jQuery('.button-nfplayerFullscreen').length > 0) {
+    //            document.getElementById('chat-container').style.height = '100%';
+    //        } else {
+    //            jQuery('#chat-container').height(jQuery('.hero-video-container').height());
+    //        }
+    //        //jQuery('#chat-container').height(jQuery('.hero-video-container').height());
+    //        //alert('Changed #chat-container height ' + jQuery('#chat-container').height());
+    //    }
+    //});
+    
     //////////////////////////////////////////////////////////////////////////
     // Main logic                                                           //
     //////////////////////////////////////////////////////////////////////////
