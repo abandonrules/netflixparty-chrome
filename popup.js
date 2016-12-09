@@ -77,7 +77,6 @@ $(function() {
         var urlWithSessionId = tabs[0].url.split('?')[0] + '?npSessionId=' + encodeURIComponent(sessionId);
         $('.disconnected').addClass('hidden');
         $('.connected').removeClass('hidden');
-        $('#show-chat').prop('checked', false);
         $('#show-chat').prop('checked', true);
         $('#share-url').val(urlWithSessionId).focus().select();
       };
