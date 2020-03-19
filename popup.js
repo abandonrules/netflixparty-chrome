@@ -1,5 +1,9 @@
 'use strict';
 
+// This whole file is just for the popup when someone clicks on the Netflix Party extension icon
+
+// Seems to be analyzing Netflix url
+
 $(function() {
   var getURLParameter = function(url, key) {
     var searchString = '?' + url.split('?')[1];
@@ -7,11 +11,13 @@ $(function() {
       return null;
     }
     var escapedKey = key.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    // RegExp is looking for matching text with a pattern, returns an object
     var regex = new RegExp('[?|&]' + escapedKey + '=' + '([^&]*)(&|$)');
     var match = regex.exec(searchString);
     if (match === null) {
       return null;
     }
+    // decodeURIComponent is built-in javascript. MDN does not explain it well
     return decodeURIComponent(match[1]);
   };
 
@@ -33,6 +39,7 @@ $(function() {
       });
 
       // set up the spinner
+    // what is the spinner?? seems to be connected to popups
       var startSpinning = function() {
         $('#control-lock').prop('disabled', true);
         $('#create-session').prop('disabled', true);
@@ -47,6 +54,7 @@ $(function() {
 
       // send a message to the content script
       var sendMessage = function(type, data, callback) {
+        // calls startSpinning
         startSpinning();
         chrome.tabs.executeScript(tabs[0].id, {
           file: 'content_script.js'
